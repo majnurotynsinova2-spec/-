@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор для ИП</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white shadow-xl rounded-2xl overflow-hidden max-w-lg w-full p-8 space-y-8">
+        <!-- Main Title -->
+        <h1 class="text-3xl font-bold text-center text-gray-800">
+            Заполните форму 910.00 правильно, без бухгалтера.
+        </h1>
+        
+        <!-- Introduction -->
+        <p class="text-center text-gray-600 leading-relaxed">
+            Чтобы снять с вас этот стресс, мы создали простой и бесплатный калькулятор, который поможет вам без ошибок рассчитать налоги и заполнить отчётность всего за пару минут.
+        </p>
+
+        <!-- Calculator Section -->
+        <div class="space-y-6">
+            <!-- Step 1 -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4">
+                <p class="font-semibold text-blue-800">Шаг 1: Введите общую сумму.</p>
+                <p class="text-blue-700 mt-1">Просто впишите в поле ниже общую сумму всех поступлений на ваш счёт ИП с Kaspi за последние полгода. Не нужно ничего вычитать!</p>
+            </div>
+            <label for="income" class="block text-sm font-medium text-gray-700">Общая сумма поступлений с Kaspi за полугодие, в тенге:</label>
+            <input type="number" id="income" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Например, 1 500 000">
+
+            <!-- Step 2 -->
+            <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4">
+                <p class="font-semibold text-green-800">Шаг 2: Получите результат.</p>
+                <p class="text-green-700 mt-1">Выберите ваш режим налогообложения, и калькулятор автоматически покажет, сколько нужно заплатить.</p>
+            </div>
+            <label for="tax-system" class="block text-sm font-medium text-gray-700">Выберите ваш режим налогообложения:</label>
+            <select id="tax-system" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <option value="simplified">Упрощенка (3%)</option>
+                <option value="retail">Розничный налог (4%)</option>
+            </select>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4 hidden">
+            <h3 class="text-xl font-bold text-gray-800 text-center">Результаты расчётов за 6 месяцев:</h3>
+            
+            <div class="space-y-3">
+                <p class="flex justify-between items-center text-gray-700 font-medium">
+                    <span>Обязательные пенсионные взносы (ОПВ):</span>
+                    <span id="opv" class="text-gray-900 font-bold">0 ₸</span>
+                </p>
+                <p class="flex justify-between items-center text-gray-700 font-medium">
+                    <span>Социальные отчисления (СО):</span>
+                    <span id="so" class="text-gray-900 font-bold">0 ₸</span>
+                </p>
+                <p class="flex justify-between items-center text-gray-700 font-medium">
+                    <span>Взносы на ОСМС:</span>
+                    <span id="voms" class="text-gray-900 font-bold">0 ₸</span>
+                </p>
+                <p class="flex justify-between items-center text-gray-700 font-medium border-t pt-4">
+                    <span>Итого налог (ИПН/СН):</span>
+                    <span id="tax" class="text-gray-900 font-bold">0 ₸</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-4 hidden" id="step3">
+            <p class="font-semibold text-yellow-800">Шаг 3: Заполните отчёт.</p>
+            <p class="text-yellow-700 mt-1">Просто скопируйте эти цифры и вставьте их в соответствующие строки формы 910.00.</p>
+        </div>
+
+        <!-- Form 910.00 Instructions -->
+        <div id="form-instructions" class="bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4 hidden">
+            <h3 class="text-xl font-bold text-gray-800 text-center">Куда вносить цифры в форму 910.00:</h3>
+            <ul class="space-y-2 text-gray-700">
+                <li class="flex justify-between items-center"><span class="font-semibold">Строка 910.00.001A (Доход):</span> <span id="form-income" class="font-bold"></span></li>
+                <li class="flex justify-between items-center"><span class="font-semibold">Строка 910.00.009 (ОПВ):</span> <span id="form-opv" class="font-bold"></span></li>
+                <li class="flex justify-between items-center"><span class="font-semibold">Строка 910.00.010 (СО):</span> <span id="form-so" class="font-bold"></span></li>
+                <li class="flex justify-between items-center"><span class="font-semibold">Строка 910.00.011 (ВОСМС):</span> <span id="form-voms" class="font-bold"></span></li>
+                <li class="flex justify-between items-center"><span class="font-semibold">Строка 910.00.012 (Сумма налога):</span> <span id="form-tax" class="font-bold"></span></li>
+            </ul>
+        </div>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const incomeInput = document.getElementById('income');
+            const taxSystemSelect = document.getElementById('tax-system');
+            const resultsSection = document.getElementById('results');
+            const step3Section = document.getElementById('step3');
+            const formInstructionsSection = document.getElementById('form-instructions');
+
+            // Result elements
+            const opvResult = document.getElementById('opv');
+            const soResult = document.getElementById('so');
+            const vomsResult = document.getElementById('voms');
+            const taxResult = document.getElementById('tax');
+
+            // Form 910.00 elements
+            const formIncome = document.getElementById('form-income');
+            const formOpv = document.getElementById('form-opv');
+            const formSo = document.getElementById('form-so');
+            const formVoms = document.getElementById('form-voms');
+            const formTax = document.getElementById('form-tax');
+
+            // Constants for 2024
+            const MZP = 85000;
+            const MRP = 3692;
+            const PERIOD_MONTHS = 6;
+
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'KZT', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+            }
+
+            function calculate() {
+                const income = parseFloat(incomeInput.value) || 0;
+                const taxSystem = taxSystemSelect.value;
+                
+                if (income > 0) {
+                    const opv = (MZP * 0.1) * PERIOD_MONTHS;
+                    const so = (MZP - (MZP * 0.1)) * 0.035 * PERIOD_MONTHS;
+                    const voms = (MRP * 1.4) * 0.05 * PERIOD_MONTHS;
+                    
+                    let tax = 0;
+                    if (taxSystem === 'simplified') {
+                        tax = income * 0.03;
+                    } else if (taxSystem === 'retail') {
+                        tax = income * 0.04;
+                    }
+
+                    opvResult.textContent = formatCurrency(opv);
+                    soResult.textContent = formatCurrency(so);
+                    vomsResult.textContent = formatCurrency(voms);
+                    taxResult.textContent = formatCurrency(tax);
+
+                    formIncome.textContent = formatCurrency(income);
+                    formOpv.textContent = formatCurrency(opv);
+                    formSo.textContent = formatCurrency(so);
+                    formVoms.textContent = formatCurrency(voms);
+                    formTax.textContent = formatCurrency(tax);
+
+                    resultsSection.classList.remove('hidden');
+                    step3Section.classList.remove('hidden');
+                    formInstructionsSection.classList.remove('hidden');
+                } else {
+                    resultsSection.classList.add('hidden');
+                    step3Section.classList.add('hidden');
+                    formInstructionsSection.classList.add('hidden');
+                }
+            }
+
+            incomeInput.addEventListener('input', calculate);
+            taxSystemSelect.addEventListener('change', calculate);
+        });
+    </script>
+</body>
+</html>
